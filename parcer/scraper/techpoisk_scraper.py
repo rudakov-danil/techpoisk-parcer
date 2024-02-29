@@ -19,21 +19,21 @@ options.page_load_strategy = 'eager'
 driver = uc.Chrome(options=options, driver_executable_path=r"C:\Python_projects\parcer\chromedriver.exe")
 driver.maximize_window()
 
-
-def scrape_category(category_url):
+#запуск основной страницы, пагинация и обработка ошибки пагинации
+def pagination(category_url):
     driver.get(category_url)
     driver.find_element(By.CLASS_NAME, 'ArchiveAndModificationsControls_wrap__3wMFA').find_element(By.CSS_SELECTOR,
                                                                                                    'div.Checkbox_wrap__Mwvom').click()
 
     while True:
 
-        scrape_product()
+        scrape_category_regard()
 
         try:
             # проверка наличия кнопки пагинации
             next_page = driver.find_element(By.CSS_SELECTOR, "button.Pagination_loadMore__u1Wm_")
         except NoSuchElementException:
-            scrape_product()
+            scrape_category_regard()
             break
 
         # скролл до кнопки пагинации
@@ -45,7 +45,9 @@ def scrape_category(category_url):
 
 #глобальная переменная для хранения спарсенных url
 scraped_urls = []
-def scrape_product():
+
+#парсинг элементов и запись в БД
+def scrape_category_regard():
 
     # храним url товаров, которые уже спарсили
     global scraped_urls
